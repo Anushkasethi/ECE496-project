@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Player } from "@lottiefiles/react-lottie-player";
-import animationData from "../../components/animations/Animation.json";
+// import { Player } from "@lottiefiles/react-lottie-player";
+// import animationData from "@/components/animations/Animation.json";
 
 const LoadingPage = () => {
   const [currentFact, setCurrentFact] = useState(
@@ -28,12 +28,12 @@ const LoadingPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <Player
+      {/* <Player
         autoplay
         loop
         src={animationData}
         style={{ height: "200px", width: "200px" }}
-      />
+      /> */}
       <h2 className="text-xl font-semibold mt-6">Processing your syllabus...</h2>
       <p className="text-teal-500 mt-2 text-center">{currentFact}</p>
     </div>

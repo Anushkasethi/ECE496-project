@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<string | null>;
+  login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, password2: string) => Promise<string | null>;
   logout: () => Promise<void>;
   error: string | null;

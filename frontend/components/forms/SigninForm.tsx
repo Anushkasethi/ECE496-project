@@ -31,7 +31,7 @@ export function SigninForm() {
     e.preventDefault(); 
     try {
       await login(email, password);
-      router.navigate("/")
+      router.push("/")
     } catch (err) {
       console.log(err);
     }
