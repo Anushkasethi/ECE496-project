@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/authcontext";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/authcontext";
 import {
   Card,
   CardHeader,

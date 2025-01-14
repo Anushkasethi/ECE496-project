@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-interface AuthContextType {
+interface authcontextType {
   isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, password2: string) => Promise<string | null>;
@@ -12,7 +12,7 @@ interface AuthContextType {
   error: string | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const authcontext = createContext<authcontextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -109,14 +109,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, signup, logout, error }}>
+    <authcontext.Provider value={{ isLoggedIn, login, signup, logout, error }}>
       {children}
-    </AuthContext.Provider>
+    </authcontext.Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(authcontext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }

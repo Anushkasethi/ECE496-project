@@ -4,8 +4,8 @@
 import React from "react";
 import Link from "next/link";
 import Logo from "./Logo";
-import { Button } from "@/components/ui/button";
-// import { useAuth } from "@/context/AuthContext";
+import { Button } from "../ui/Button";
+// import { useAuth } from "@/context/authcontext";
 
 interface NavbarProps {
   onLogout?: () => void;

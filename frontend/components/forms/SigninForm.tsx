@@ -11,12 +11,12 @@ import {
   Card,
 } from "@/components/ui/card";
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/authcontext";
 import { useRouter } from "next/router";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/authcontext";
 
 
 export function SigninForm() {
