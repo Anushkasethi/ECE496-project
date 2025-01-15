@@ -7,7 +7,7 @@ export default function Home() {
     // Ensure this runs in the browser only
     if (typeof window !== "undefined") {
       // Store the backend URL in sessionStorage
-      sessionStorage.setItem("backend_url", "http://localhost:8000");
+      sessionStorage.setItem("backend_url", "https://ece496-project.onrender.com");
       console.log("Backend URL stored in sessionStorage.");
     }
   }, []);
