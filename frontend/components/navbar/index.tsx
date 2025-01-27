@@ -4,7 +4,7 @@
 import React from "react";
 import Link from "next/link";
 import Logo from "./Logo";
-import { Button } from "../ui/Button";
+import { Button } from "../ui/button";
 // import { useAuth } from "@/context/authcontext";
 
 interface NavbarProps {
@@ -36,6 +36,11 @@ const Navbar = () => {
               <li>
                 <Link href="/upload-syllabus">
                   <p>Upload Syllabus</p>
+                </Link>
+              </li>
+              <li>
+                <Link href="/when2meet">
+                  <p>Calendar</p>
                 </Link>
               </li>
               <li>
