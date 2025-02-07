@@ -23,3 +23,17 @@ class PDFSchema(PDFBase):
 
     class Config:
         orm_mode = True  # Enable ORM support to work seamlessly with SQLAlchemy models
+
+class CalendarEventBase(BaseModel):
+    summary: str
+    start: str
+    end: str
+
+class CalendarEventCreate(CalendarEventBase):
+    user_id: str
+
+class CalendarEvent(CalendarEventBase):
+    id: int
+
+    class Config:
+        orm_mode = True

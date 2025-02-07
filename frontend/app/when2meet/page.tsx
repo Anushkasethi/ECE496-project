@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import type { Event, CalendarEvent } from "./types"
 import { EventForm } from "./event-form"
 import { generateRecurringEvents, getEventColor } from "./utils"
-
+const TEMP_USER_ID = "jPxNqTcoqbhEbPVOTJ5TIPprp3e2";  
 export default function Calendar() {
   const [currentDate, setCurrentDate] = React.useState(new Date())
   const [events, setEvents] = React.useState<CalendarEvent[]>([])
@@ -31,21 +31,47 @@ export default function Calendar() {
 
     const formData = new FormData()
     formData.append("file", file)
-
+    // const userId = sessionStorage.getItem('user_id');
+    if (!TEMP_USER_ID) {
+      alert("You must be logged in to upload a file");
+      return;
+    }
     try {
-      const response = await fetch("http://127.0.0.1:5000/parse", {
+      const response = await fetch("http://localhost:8000/parse", {
         method: "POST",
         body: formData,
       })
+      if (!response.ok) {
+        throw new Error(`HTTP error! in /parse status: ${response.status}`);
+      }
+      const data: { events?: Event[] } = await response.json();
+    console.log("API Response:", data); // Debugging step
 
-      const data: Event[] = await response.json()
+    if (!data.events || !Array.isArray(data.events)) {
+      console.error("Unexpected API response format:", data);
+      throw new Error("Invalid API response: expected an object with an 'events' array");
+    }
 
-      // Process the events and generate recurring instances
-      const processedEvents = data.flatMap((event) => {
-        const color = getEventColor(event.summary)
-        return generateRecurringEvents({ ...event, id: nanoid(), color })
-      })
-
+    // Process events safely
+    const processedEvents = data.events.flatMap((event) => {
+      const color = getEventColor(event.summary);
+      return generateRecurringEvents({ ...event, id: nanoid(), color });
+    });
+      
+      for (const event of processedEvents) {
+        await fetch("http://localhost:8000/calendar/events/", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            summary: event.summary,
+            start: event.start,
+            end: event.end,
+            user_id: TEMP_USER_ID, // Replace with actual user ID
+          }),
+        });
+      }
       setEvents(processedEvents)
     } catch (error) {
       console.error("Error uploading file:", error)
@@ -53,29 +79,78 @@ export default function Calendar() {
     }
   }
 
-  const handleAddEvent = (newEvent: Omit<Event, "id">) => {
+  const handleAddEvent = async (newEvent: Omit<Event, 'id'>) => {
+    // const userId = sessionStorage.getItem('user_id');
+    if (!TEMP_USER_ID) {
+      alert("You must be logged in to add an event");
+      return;
+    }
     const event = {
       ...newEvent,
       id: nanoid(),
       color: getEventColor(newEvent.summary),
     }
+    try {
+      const response = await fetch("http://localhost:8000/calendar/events/", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          summary: event.summary,
+          start: event.start,
+          end: event.end,
+          user_id: TEMP_USER_ID, // Replace with actual user ID
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const savedEvent = await response.json();
+      setEvents(prev => [...prev, { ...savedEvent, color: event.color }]);
+    } catch (error) {
+      console.error('Error adding event:', error);
+      alert('Error adding event');
+    }
+  };
+  //   const processedEvents = newEvent.isRecurring
+  //     ? generateRecurringEvents(event)
+  //     : [
+  //         {
+  //           ...event,
+  //           start: parseISO(newEvent.start),
+  //           end: parseISO(newEvent.end),
+  //         },
+  //       ]
 
-    const processedEvents = newEvent.isRecurring
-      ? generateRecurringEvents(event)
-      : [
-          {
-            ...event,
-            start: parseISO(newEvent.start),
-            end: parseISO(newEvent.end),
-          },
-        ]
-
-    setEvents((prev) => [...prev, ...processedEvents])
-  }
-
-  const hours = Array.from({ length: 12 }, (_, i) => i + 8) // 8 AM to 8 PM
+  //   setEvents((prev) => [...prev, ...processedEvents])
+  // }
+  
+  const hours = Array.from({ length: 12 }, (_, i) => i + 9) // 8 AM to 8 PM
   const days = Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(currentDate), i))
-
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/calendar/events/${TEMP_USER_ID}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Event[] = await response.json();
+        const processedEvents = data.map(event => ({
+          ...event,
+          color: getEventColor(event.summary),
+          start: new Date(event.start),
+          end: new Date(event.end),
+        }));
+        setEvents(processedEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+  
+    fetchEvents();
+  }, []);
   return (
     <div className="flex h-screen flex-col">
       <header className="flex items-center justify-between border-b px-6 py-4">

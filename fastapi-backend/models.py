@@ -16,3 +16,11 @@ class PDF(Base):
         return f"<PDF(id={self.id}, title='{self.title}', pdf='{self.pdf}', uploaded_at={self.uploaded_at})>"
 
     # uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class CalendarEvent(Base):
+    __tablename__ = "calendar_events"
+    id = Column(Integer, primary_key=True, index=True)
+    summary = Column(String, index=True)
+    start = Column(String)
+    end = Column(String)
+    user_id = Column(String, index=True)
