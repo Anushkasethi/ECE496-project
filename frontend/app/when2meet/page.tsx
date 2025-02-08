@@ -29,9 +29,15 @@ export default function Calendar() {
       alert("Please upload a file")
       return
     }
-
-    const formData = new FormData()
-    formData.append("file", file)
+    const shouldReplace = window.confirm("Do you want to replace your existing schedule?");
+  
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("user_id", TEMP_USER_ID);
+    formData.append("replace", shouldReplace ? "true" : "false");  // Pass user choice
+  
+    // const formData = new FormData()
+    // formData.append("file", file)
     // const userId = sessionStorage.getItem('user_id');
     if (!TEMP_USER_ID) {
       alert("You must be logged in to upload a file");

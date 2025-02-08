@@ -314,24 +314,63 @@ async def upload_form(request: Request):
     return templates.TemplateResponse("upload_pdf.html", {"request": request})
 
 @app.post("/parse/")
-async def parse_ics(file: UploadFile = File(...)):
+async def parse_ics(
+    file: UploadFile = File(...), 
+    user_id: str = Form(...), 
+    replace: str = Form(...), 
+    db: Session = Depends(get_db)
+):
     try:
         contents = await file.read()
         c = Calendar(contents.decode("utf-8"))
 
-        events = [
-            {
-                "summary": event.name,  # Course code
-                "start": event.begin.format("YYYY-MM-DD HH:mm"),  # Start time
-                "end": event.end.format("YYYY-MM-DD HH:mm"),  # End time
-            }
-            for event in c.events
-        ]
+        # If user chooses to replace, delete existing events for this user
+        if replace.lower() == "true":
+            db.query(CalendarEvent).filter(CalendarEvent.user_id == user_id).delete()
+            db.commit()
 
-        return {"events": events}
+        # Extract events from the .ics file
+        events = []
+        for event in c.events:
+            db_event = CalendarEvent(
+                summary=event.name,  # Course code
+                start=event.begin.datetime,  # Start time
+                end=event.end.datetime,  # End time
+                user_id=user_id
+            )
+            db.add(db_event)
+            events.append({
+                "summary": event.name,
+                "start": event.begin.format("YYYY-MM-DD HH:mm"),
+                "end": event.end.format("YYYY-MM-DD HH:mm")
+            })
+
+        db.commit()
+
+        return {"message": "Events updated successfully", "events": events}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+# @app.post("/parse/")
+# async def parse_ics(file: UploadFile = File(...)):
+#     try:
+#         contents = await file.read()
+#         c = Calendar(contents.decode("utf-8"))
+
+#         events = [
+#             {
+#                 "summary": event.name,  # Course code
+#                 "start": event.begin.format("YYYY-MM-DD HH:mm"),  # Start time
+#                 "end": event.end.format("YYYY-MM-DD HH:mm"),  # End time
+#             }
+#             for event in c.events
+#         ]
+
+#         return {"events": events}
+
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=str(e))
     
 @app.post("/login")
 async def login_user(response: Response, email: str = Form(...), password: str = Form(...)):
@@ -431,6 +470,7 @@ def create_event(event: CalendarEventCreate, db: Session = Depends(get_db)):
 @app.get("/calendar/events/{user_id}", response_model=List[CalendarEventSchema])
 def read_events(user_id: str, db: Session = Depends(get_db)):
     events = db.query(CalendarEvent).filter(CalendarEvent.user_id == user_id).all()
+    print(events)
     return events
 
 @app.put("/calendar/events/{event_id}", response_model=CalendarEventSchema)
