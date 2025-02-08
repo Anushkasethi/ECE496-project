@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input"
 import type { Event, CalendarEvent } from "./types"
 import { EventForm } from "./event-form"
 import { generateRecurringEvents, getEventColor } from "./utils"
-const TEMP_USER_ID = "jPxNqTcoqbhEbPVOTJ5TIPprp3e2";  
+// const TEMP_USER_ID = "jPxNqTcoqbhEbPVOTJ5TIPprp3e2";  
+const TEMP_USER_ID = "kdOuanGB1bXfvUHTnGJcmZVOZFt2";
 export default function Calendar() {
   const [currentDate, setCurrentDate] = React.useState(new Date())
   const [events, setEvents] = React.useState<CalendarEvent[]>([])

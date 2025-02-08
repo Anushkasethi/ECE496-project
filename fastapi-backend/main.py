@@ -430,9 +430,8 @@ def create_event(event: CalendarEventCreate, db: Session = Depends(get_db)):
 
 @app.get("/calendar/events/{user_id}", response_model=List[CalendarEventSchema])
 def read_events(user_id: str, db: Session = Depends(get_db)):
-    # events = db.query(CalendarEvent).filter(CalendarEvent.user_id == user_id).all()
-    # return events
-    return []
+    events = db.query(CalendarEvent).filter(CalendarEvent.user_id == user_id).all()
+    return events
 
 @app.put("/calendar/events/{event_id}", response_model=CalendarEventSchema)
 def update_event(event_id: int, event: CalendarEventCreate, db: Session = Depends(get_db)):
