@@ -1,4 +1,4 @@
-import Navigation from "@/components/navbar";
+import Navbar from "@/components/navbar";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/context/authcontext";
@@ -18,9 +18,29 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navigation />
-        <AuthProvider>{children}</AuthProvider>
+        {/* <Navigation /> */}
+        <AuthProvider>
+        <Navbar />
+          {children}
+          </AuthProvider>
       </body>
     </html>
   );
 }
+// "use client";
+
+// import { AuthProvider } from "@/context/authcontext";
+// import Navbar from "@/components/navbar";
+
+// export default function RootLayout({ children }: { children: React.ReactNode }) {
+//   return (
+//     <html lang="en">
+//       <body>
+//         <AuthProvider>
+//           <Navbar />
+//           {children}
+//         </AuthProvider>
+//       </body>
+//     </html>
+//   );
+// }
